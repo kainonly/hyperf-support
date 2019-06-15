@@ -9,6 +9,7 @@ abstract class BitController extends BaseController
 {
     protected $model;
     protected $post = [];
+    protected $request;
 
     protected $origin_lists_validate = [];
     protected $origin_lists_default_validate = [
@@ -122,6 +123,7 @@ abstract class BitController extends BaseController
 
     public function __construct(Request $request)
     {
+        $this->request = $request;
         $this->post = $request->toArray();
     }
 }
