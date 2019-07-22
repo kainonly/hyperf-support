@@ -1,3 +1,9 @@
-# lumen-curd
+# Lumen Curd
 
-Make the Lumen framework more convenient to expand
+CURD library for Lumen framework
+
+### Setup
+
+```shell
+composer require kain/lumen-curd
+```
