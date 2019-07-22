@@ -1,6 +1,6 @@
 <?php
 
-namespace lumen\bit\curd;
+namespace lumen\bit\common;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 /**
  * Trait GetModel
- * @package laravel\bit\curd
+ * @package laravel\bit\common
  * @property string model
  * @property array post
  * @property array get_validate

@@ -1,13 +1,13 @@
 <?php
 
-namespace lumen\bit\curd;
+namespace lumen\bit\common;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * Trait EditModel
- * @package laravel\bit\curd
+ * @package laravel\bit\common
  * @property string model
  * @property array post
  * @property boolean edit_switch
