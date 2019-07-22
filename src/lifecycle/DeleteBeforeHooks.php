@@ -1,6 +1,6 @@
 <?php
 
-namespace lumen\bit\lifecycle;
+namespace lumen\curd\lifecycle;
 
 interface DeleteBeforeHooks
 {

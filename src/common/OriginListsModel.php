@@ -1,6 +1,6 @@
 <?php
 
-namespace lumen\bit\common;
+namespace lumen\curd\common;
 
 use Closure;
 use Illuminate\Database\QueryException;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 /**
  * Trait ListsModel
- * @package laravel\bit\common
+ * @package lumen\curd\common
  * @property string model
  * @property array post
  * @property array origin_lists_validate

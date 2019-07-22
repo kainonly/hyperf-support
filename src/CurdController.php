@@ -1,11 +1,11 @@
 <?php
 
-namespace lumen\bit;
+namespace lumen\curd;
 
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
-abstract class BitController extends BaseController
+abstract class CurdController extends BaseController
 {
     protected $model;
     protected $post = [];

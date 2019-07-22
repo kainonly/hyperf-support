@@ -1,13 +1,13 @@
 <?php
 
-namespace lumen\bit\common;
+namespace lumen\curd\common;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * Trait DeleteModel
- * @package laravel\bit\common
+ * @package lumen\curd\common
  * @property string model
  * @property array post
  * @property array delete_validate
