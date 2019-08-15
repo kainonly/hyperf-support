@@ -8,15 +8,15 @@ use Illuminate\Support\Facades\Validator;
 /**
  * Trait DeleteModel
  * @package lumen\curd\common
- * @property string model
- * @property array post
- * @property array delete_validate
- * @property array delete_default_validate
- * @property array delete_before_result
- * @property array delete_prep_result
- * @property array delete_condition
- * @property array delete_after_result
- * @property array delete_fail_result
+ * @property string $model
+ * @property array $post
+ * @property array $delete_validate
+ * @property array $delete_default_validate
+ * @property array $delete_before_result
+ * @property array $delete_prep_result
+ * @property array $delete_condition
+ * @property array $delete_after_result
+ * @property array $delete_fail_result
  */
 trait DeleteModel
 {
@@ -27,10 +27,12 @@ trait DeleteModel
             $this->delete_default_validate
         ));
 
-        if ($validator->fails()) return [
-            'error' => 1,
-            'msg' => $validator->errors()
-        ];
+        if ($validator->fails()) {
+            return [
+                'error' => 1,
+                'msg' => $validator->errors()
+            ];
+        }
 
         if (method_exists($this, '__deleteBeforeHooks') &&
             !$this->__deleteBeforeHooks()) {
@@ -46,14 +48,17 @@ trait DeleteModel
             }
 
             $condition = $this->delete_condition;
-            if (isset($this->post['id'])) $result = DB::table($this->model)
-                ->whereIn('id', $this->post['id'])
-                ->where($condition)
-                ->delete();
-            else $result = DB::table($this->model)
-                ->where($this->post['where'])
-                ->where($condition)
-                ->delete();
+            if (isset($this->post['id'])) {
+                $result = DB::table($this->model)
+                    ->whereIn('id', $this->post['id'])
+                    ->where($condition)
+                    ->delete();
+            } else {
+                $result = DB::table($this->model)
+                    ->where($this->post['where'])
+                    ->where($condition)
+                    ->delete();
+            }
 
             if (!$result) {
                 DB::rollBack();

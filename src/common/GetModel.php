@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Validator;
 /**
  * Trait GetModel
  * @package lumen\curd\common
- * @property string model
- * @property array post
- * @property array get_validate
- * @property array get_default_validate
- * @property array get_before_result
- * @property array get_condition
- * @property array get_columns
+ * @property string $model
+ * @property array $post
+ * @property array $get_validate
+ * @property array $get_default_validate
+ * @property array $get_before_result
+ * @property array $get_condition
+ * @property string $get_field
  */
 trait GetModel
 {
@@ -26,10 +26,12 @@ trait GetModel
             $this->get_default_validate
         ));
 
-        if ($validator->fails()) return [
-            'error' => 1,
-            'msg' => $validator->errors()
-        ];
+        if ($validator->fails()) {
+            return [
+                'error' => 1,
+                'msg' => $validator->errors()
+            ];
+        }
 
         if (method_exists($this, '__getBeforeHooks') &&
             !$this->__getBeforeHooks()) {
@@ -38,22 +40,27 @@ trait GetModel
 
         try {
             $condition = $this->get_condition;
-            if (isset($this->post['id'])) array_push(
-                $condition,
-                ['id', '=', $this->post['id']]
-            ); else $condition = array_merge(
-                $condition,
-                $this->post['where']
-            );
+            if (isset($this->post['id'])) {
+                array_push(
+                    $condition,
+                    ['id', '=', $this->post['id']]
+                );
+            } else {
+                $condition = array_merge(
+                    $condition,
+                    $this->post['where']
+                );
+            }
 
             $data = DB::table($this->model)
                 ->where($condition)
-                ->first($this->get_columns);
+                ->first([$this->get_field]);
 
-            return method_exists($this, '__getCustomReturn') ? $this->__getCustomReturn($data) : [
-                'error' => 0,
-                'data' => $data
-            ];
+            return method_exists($this, '__getCustomReturn') ?
+                $this->__getCustomReturn($data) : [
+                    'error' => 0,
+                    'data' => $data
+                ];
         } catch (QueryException $e) {
             return [
                 'error' => 1,

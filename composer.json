@@ -1,7 +1,9 @@
 {
     "name": "kain/lumen-curd",
     "description": "CURD library for Lumen framework",
-    "license": "MIT",
+    "require": {
+        "laravel/lumen-framework": "5.8.*"
+    },
     "autoload": {
         "psr-4": {
             "lumen\\curd\\": "src/"
@@ -13,7 +15,5 @@
             "email": "zhangtqx@vip.qq.com"
         }
     ],
-    "require": {
-        "laravel/lumen-framework": "5.8.*"
-    }
+    "license": "MIT"
 }
