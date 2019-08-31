@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Validator;
  * @property array $origin_lists_before_result
  * @property array $origin_lists_condition
  * @property Closure|null $origin_lists_query
- * @property string $origin_lists_order
- * @property string $origin_lists_field
+ * @property array $origin_lists_order
+ * @property array $origin_lists_field
  */
 trait OriginListsModel
 {
@@ -55,9 +55,9 @@ trait OriginListsModel
                 ->orderBy(...$this->origin_lists_order);
 
             $lists = empty($this->origin_lists_query) ?
-                $listsQuery->get([$this->origin_lists_field]) :
+                $listsQuery->get($this->origin_lists_field) :
                 $listsQuery->where($this->origin_lists_query)
-                    ->get([$this->origin_lists_field]);
+                    ->get($this->origin_lists_field);
 
             return method_exists($this, '__originListsCustomReturn') ?
                 $this->__originListsCustomReturn($lists) : [

@@ -70,9 +70,9 @@ abstract class CurdController extends BaseController
 
     /**
      * Origin Lists Field
-     * @var string
+     * @var array
      */
-    protected $origin_lists_field = '*';
+    protected $origin_lists_field = ['*'];
 
     /**
      * Lists Validate
@@ -121,9 +121,9 @@ abstract class CurdController extends BaseController
 
     /**
      * Lists field
-     * @var string
+     * @var array
      */
-    protected $lists_field = '*';
+    protected $lists_field = ['*'];
 
     /**
      * Get Validate
@@ -158,9 +158,9 @@ abstract class CurdController extends BaseController
 
     /**
      * Get Field
-     * @var string
+     * @var array
      */
-    protected $get_field = '*';
+    protected $get_field = ['*'];
 
     /**
      * Add Validate

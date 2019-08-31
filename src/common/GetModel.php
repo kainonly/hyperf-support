@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
  * @property array $get_default_validate
  * @property array $get_before_result
  * @property array $get_condition
- * @property string $get_field
+ * @property array $get_field
  */
 trait GetModel
 {
@@ -54,7 +54,7 @@ trait GetModel
 
             $data = DB::table($this->model)
                 ->where($condition)
-                ->first([$this->get_field]);
+                ->first($this->get_field);
 
             return method_exists($this, '__getCustomReturn') ?
                 $this->__getCustomReturn($data) : [

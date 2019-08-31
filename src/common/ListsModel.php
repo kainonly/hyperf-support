@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
  * @property array $lists_condition
  * @property Closure|null $lists_query
  * @property array $lists_order
- * @property string lists_field
+ * @property array $lists_field
  */
 trait ListsModel
 {
@@ -65,9 +65,9 @@ trait ListsModel
                 ->skip($this->post['page']['index'] - 1);
 
             $lists = empty($this->lists_condition_group) ?
-                $listsQuery->get([$this->lists_field]) :
+                $listsQuery->get($this->lists_field) :
                 $listsQuery->where($this->lists_condition_group)
-                    ->get([$this->lists_field]);
+                    ->get($this->lists_field);
 
             return method_exists($this, '__listsCustomReturn') ?
                 $this->__listsCustomReturn($lists, $total) : [
