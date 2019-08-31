@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
  * @property array $post
  * @property boolean $edit_switch
  * @property array $edit_validate
+ * @property bool $edit_auto_timestamp
  * @property array $edit_default_validate
  * @property array $edit_before_result
  * @property array $edit_condition
@@ -46,7 +47,10 @@ trait EditModel
         }
 
         unset($this->post['switch']);
-        $this->post['update_time'] = time();
+
+        if ($this->edit_auto_timestamp) {
+            $this->post['update_time'] = time();
+        }
 
         if (method_exists($this, '__editBeforeHooks') &&
             !$this->__editBeforeHooks()) {

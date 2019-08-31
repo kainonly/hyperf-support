@@ -169,6 +169,12 @@ abstract class CurdController extends BaseController
     protected $add_validate = [];
 
     /**
+     * Auto Timestamp
+     * @var bool
+     */
+    protected $add_auto_timestamp = true;
+
+    /**
      * Add Default Validate
      * @var array
      */
@@ -208,6 +214,12 @@ abstract class CurdController extends BaseController
      * @var array
      */
     protected $edit_validate = [];
+
+    /**
+     * Auto Timestamp
+     * @var bool
+     */
+    protected $edit_auto_timestamp = true;
 
     /**
      * Edit Default Validate

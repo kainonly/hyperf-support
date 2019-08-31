@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
  * @property string $model
  * @property array $post
  * @property array $add_validate
+ * @property bool $add_auto_timestamp
  * @property array $add_default_validate
  * @property array $add_before_result
  * @property array $add_after_result
@@ -32,7 +33,9 @@ trait AddModel
             ];
         }
 
-        $this->post['create_time'] = $this->post['update_time'] = time();
+        if ($this->add_auto_timestamp) {
+            $this->post['create_time'] = $this->post['update_time'] = time();
+        }
 
         if (method_exists($this, '__addBeforeHooks') &&
             !$this->__addBeforeHooks()) {
