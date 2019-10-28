@@ -1,13 +1,13 @@
 <?php
 
-namespace lumen\curd\common;
+namespace Lumen\Curd\Common;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * Trait EditModel
- * @package lumen\curd\common
+ * @package Lumen\Curd\Common
  * @property string $model
  * @property array $post
  * @property boolean $edit_switch

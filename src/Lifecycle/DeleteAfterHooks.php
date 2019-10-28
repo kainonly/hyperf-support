@@ -1,6 +1,6 @@
 <?php
 
-namespace lumen\curd\lifecycle;
+namespace Lumen\Curd\Lifecycle;
 
 interface DeleteAfterHooks
 {

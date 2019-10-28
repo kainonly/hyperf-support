@@ -1,11 +1,15 @@
 <?php
 
-namespace lumen\curd;
+namespace Lumen\Curd;
 
 use Closure;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
 
+/**
+ * Class CurdController
+ * @package Lumen\Curd
+ */
 abstract class CurdController extends BaseController
 {
     /**
