@@ -1,0 +1,8 @@
+{
+  "name": "van-core",
+  "version": "1.0.0",
+  "main": "public-api.js",
+  "dependencies": {
+    "fastify": "^2.11.0"
+  }
+}
