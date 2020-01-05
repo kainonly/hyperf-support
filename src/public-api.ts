@@ -1,2 +1,2 @@
-export * from './lib/application';
-export * from './lib/controller';
+export * from './application';
+export * from './annotation/controller';

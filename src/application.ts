@@ -1,7 +1,11 @@
 import * as fastify from 'fastify';
+import { ApplicationParams } from './types/application-params';
 
 export class Application {
   private server: fastify.FastifyInstance;
+
+  constructor(params: ApplicationParams) {
+  }
 
   getServer(): fastify.FastifyInstance {
     return this.server;
