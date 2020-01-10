@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Redis;
 
+use Exception;
 use Hyperf\Extra\Contract\HashServiceInterface;
 use Hyperf\Support\Common\RedisModel;
 use Psr\Container\ContainerInterface;
@@ -28,7 +29,7 @@ class RefreshToken extends RedisModel
      * @param int $expires Expires
      * @return bool
      */
-    public function factory(string $jti, string $ack, int $expires)
+    public function factory(string $jti, string $ack, int $expires): bool
     {
         return $this->redis->setex(
             $this->key . $jti,
@@ -42,11 +43,12 @@ class RefreshToken extends RedisModel
      * @param string $jti Token ID
      * @param string $ack Ack Code
      * @return bool
+     * @throws Exception
      */
-    public function verify(string $jti, string $ack)
+    public function verify(string $jti, string $ack): bool
     {
         if (!$this->redis->exists($this->key . $jti)) {
-            return false;
+            throw new Exception("The [$this->key . $jti] cache not exists.");
         }
 
         return $this->hash->check(
@@ -60,15 +62,16 @@ class RefreshToken extends RedisModel
      * @param string $jti Token ID
      * @param string $ack Ack Code
      * @return int
+     * @throws Exception
      */
-    public function clear(string $jti, string $ack)
+    public function clear(string $jti, string $ack): int
     {
         if (!$this->redis->exists($this->key . $jti)) {
-            return true;
+            throw new Exception("The [$this->key . $jti] cache not exists.");
         }
 
         if (!$this->hash->check($ack, $this->redis->get($this->key . $jti))) {
-            return false;
+            throw new Exception("Token confirmation codes are inconsistent.");
         }
 
         return $this->redis->del([$this->key . $jti]);

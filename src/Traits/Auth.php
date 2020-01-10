@@ -4,15 +4,15 @@ declare(strict_types=1);
 namespace Hyperf\Support\Traits;
 
 use Exception;
-use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
 use Hyperf\Utils\Str;
+use Lcobucci\JWT\Token;
+use Hyperf\Support\Redis\RefreshToken;
+use Psr\Container\ContainerInterface;
 use Hyperf\Extra\Contract\TokenServiceInterface;
 use Hyperf\Extra\Contract\UtilsServiceInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
-use Hyperf\Support\Redis\RefreshToken;
-use Lcobucci\JWT\Token;
-use Psr\Container\ContainerInterface;
+use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 /**
