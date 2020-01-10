@@ -5,8 +5,10 @@ namespace Hyperf\Support\Middleware;
 
 use Hyperf\Extra\Contract\TokenServiceInterface;
 use Hyperf\Extra\Contract\UtilsServiceInterface;
+use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
 use Hyperf\Support\Redis\RefreshToken;
 use Hyperf\Utils\Context;
+use Lcobucci\JWT\Token;
 use Psr\Container\ContainerInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -55,11 +57,9 @@ abstract class AuthVerify implements MiddlewareInterface
     }
 
     /**
-     * Process an incoming server request.
-     *
-     * Processes an incoming server request in order to produce a response.
-     * If unable to produce the response itself, it may delegate to the provided
-     * request handler to do so.
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
+     * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -76,7 +76,7 @@ abstract class AuthVerify implements MiddlewareInterface
             if ($result->expired) {
                 $response = Context::get(ResponseInterface::class);
                 /**
-                 * @var $token \Lcobucci\JWT\Token
+                 * @var $token Token
                  */
                 $token = $result->token;
                 $jti = $token->getClaim('jti');
@@ -106,7 +106,7 @@ abstract class AuthVerify implements MiddlewareInterface
                 Context::set(ResponseInterface::class, $response);
             }
             return $handler->handle($request);
-        } catch (\Exception $e) {
+        } catch (InvalidResponseException $e) {
             return $this->response->json([
                 'error' => 1,
                 'msg' => $e->getMessage()
