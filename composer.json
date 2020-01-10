@@ -1,0 +1,20 @@
+{
+  "name": "kain/hyperf-support",
+  "description": "Feature support library like Laravel for Hyperf framework",
+  "require": {
+    "ext-swoole": ">=4.4",
+    "hyperf/framework": "~1.1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Hyperf\\Support\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "kain",
+      "email": "zhangtqx@vip.qq.com"
+    }
+  ],
+  "license": "MIT"
+}
