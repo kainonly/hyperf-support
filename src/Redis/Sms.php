@@ -8,7 +8,7 @@ use Hyperf\Support\Common\RedisModel;
 
 class Sms extends RedisModel
 {
-    protected $key = 'sms:';
+    protected string $key = 'sms:';
 
     /**
      * Factory Verify Code For Phone

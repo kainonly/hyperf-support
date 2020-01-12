@@ -10,11 +10,8 @@ use Psr\Container\ContainerInterface;
 
 class RefreshToken extends RedisModel
 {
-    protected $key = 'refresh-token:';
-    /**
-     * @var HashServiceInterface
-     */
-    private $hash;
+    protected string $key = 'refresh-token:';
+    private HashServiceInterface $hash;
 
     public function __construct(ContainerInterface $container)
     {
