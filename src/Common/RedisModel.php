@@ -12,20 +12,9 @@ use Redis;
  */
 abstract class RedisModel
 {
-    /**
-     * Model key
-     * @var string $key
-     */
-    protected $key;
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-    /**
-     * Redis Manager
-     * @var  Redis $redis
-     */
-    protected $redis;
+    protected string $key;
+    protected ContainerInterface $container;
+    protected Redis $redis;
 
     /**
      * Create RedisModel

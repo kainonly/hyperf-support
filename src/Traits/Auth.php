@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Traits;
 
+use Redis;
 use Exception;
 use Hyperf\Utils\Str;
 use Lcobucci\JWT\Token;
@@ -23,7 +24,7 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
  * @property ContainerInterface $container
  * @property TokenServiceInterface $token
  * @property UtilsServiceInterface $utils
- * @property \Redis $redis
+ * @property Redis $redis
  */
 trait Auth
 {
@@ -31,7 +32,7 @@ trait Auth
      * Set RefreshToken Expires
      * @return int
      */
-    protected function __refreshTokenExpires(): int
+    protected function refreshTokenExpires(): int
     {
         return 604800;
     }
@@ -43,11 +44,11 @@ trait Auth
      * @return PsrResponseInterface
      * @throws Exception
      */
-    protected function __create(string $scene, array $symbol = []): PsrResponseInterface
+    protected function create(string $scene, array $symbol = []): PsrResponseInterface
     {
         $jti = $this->utils->uuid()->toString();
         $ack = Str::random();
-        $result = RefreshToken::create($this->container)->factory($jti, $ack, $this->__refreshTokenExpires());
+        $result = RefreshToken::create($this->container)->factory($jti, $ack, $this->refreshTokenExpires());
         if (!$result) {
             throw new InvalidResponseException('refresh token set failed');
         }
@@ -66,8 +67,9 @@ trait Auth
      * Auth Verify
      * @param $scene
      * @return PsrResponseInterface
+     * @throws Exception
      */
-    protected function __verify($scene): PsrResponseInterface
+    protected function authVerify($scene): PsrResponseInterface
     {
         try {
             $tokenString = $this->request->cookie($scene . '_token');
@@ -120,8 +122,9 @@ trait Auth
      * Destory Auth
      * @param string $scene
      * @return PsrResponseInterface
+     * @throws Exception
      */
-    protected function __destory(string $scene): PsrResponseInterface
+    protected function destory(string $scene): PsrResponseInterface
     {
         $tokenString = $this->request->cookie($scene . '_token');
         if (!empty($tokenString)) {

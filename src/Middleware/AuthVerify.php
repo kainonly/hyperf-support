@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Middleware;
 
+use Exception;
 use Hyperf\Extra\Contract\TokenServiceInterface;
 use Hyperf\Extra\Contract\UtilsServiceInterface;
 use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
@@ -22,25 +23,10 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 abstract class AuthVerify implements MiddlewareInterface
 {
-    /**
-     * @var string
-     */
-    protected $scene = 'default';
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-    /**
-     * @var HttpResponse
-     */
-    private $response;
-    /**
-     * @var TokenServiceInterface
-     */
-    private $token;
-    /**
-     * @var UtilsServiceInterface
-     */
+    protected string $scene = 'default';
+    private ContainerInterface $container;
+    private HttpResponse $response;
+    private TokenServiceInterface $token;
     private $utils;
 
     /**
@@ -60,6 +46,7 @@ abstract class AuthVerify implements MiddlewareInterface
      * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler
      * @return ResponseInterface
+     * @throws Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

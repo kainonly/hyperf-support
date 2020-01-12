@@ -50,7 +50,6 @@ class RefreshToken extends RedisModel
         if (!$this->redis->exists($this->key . $jti)) {
             throw new Exception("The [$this->key . $jti] cache not exists.");
         }
-
         return $this->hash->check(
             $ack,
             $this->redis->get($this->key . $jti)
@@ -69,11 +68,9 @@ class RefreshToken extends RedisModel
         if (!$this->redis->exists($this->key . $jti)) {
             throw new Exception("The [$this->key . $jti] cache not exists.");
         }
-
         if (!$this->hash->check($ack, $this->redis->get($this->key . $jti))) {
             throw new Exception("Token confirmation codes are inconsistent.");
         }
-
         return $this->redis->del([$this->key . $jti]);
     }
 }
