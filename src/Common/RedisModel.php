@@ -18,7 +18,7 @@ abstract class RedisModel
 
     /**
      * Create RedisModel
-     * @param Redis $redis
+     * @param ContainerInterface $container
      * @return static
      */
     public static function create(ContainerInterface $container)
@@ -30,7 +30,7 @@ abstract class RedisModel
 
     /**
      * RedisModel constructor.
-     * @param Redis $redis
+     * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)
     {
