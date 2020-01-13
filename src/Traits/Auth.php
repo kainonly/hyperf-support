@@ -110,10 +110,10 @@ trait Auth
                 'error' => 0,
                 'msg' => 'ok'
             ]);
-        } catch (InvalidResponseException $e) {
+        } catch (InvalidResponseException $exception) {
             return $this->response->json([
                 'error' => 1,
-                'msg' => $e->getMessage()
+                'msg' => $exception->getMessage()
             ]);
         }
     }

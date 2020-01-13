@@ -93,10 +93,10 @@ abstract class AuthVerify implements MiddlewareInterface
                 Context::set(ResponseInterface::class, $response);
             }
             return $handler->handle($request);
-        } catch (InvalidResponseException $e) {
+        } catch (InvalidResponseException $exception) {
             return $this->response->json([
                 'error' => 1,
-                'msg' => $e->getMessage()
+                'msg' => $exception->getMessage()
             ]);
         }
     }
