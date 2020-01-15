@@ -9,8 +9,8 @@ use Hyperf\Utils\Str;
 use Lcobucci\JWT\Token;
 use Hyperf\Support\Redis\RefreshToken;
 use Psr\Container\ContainerInterface;
-use Hyperf\Extra\Contract\TokenServiceInterface;
-use Hyperf\Extra\Contract\UtilsServiceInterface;
+use Hyperf\Extra\Contract\TokenInterface;
+use Hyperf\Extra\Contract\UtilsInterface;
 use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
@@ -22,8 +22,8 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
  * @property RequestInterface $request
  * @property ResponseInterface $response
  * @property ContainerInterface $container
- * @property TokenServiceInterface $token
- * @property UtilsServiceInterface $utils
+ * @property TokenInterface $token
+ * @property UtilsInterface $utils
  * @property Redis $redis
  */
 trait Auth

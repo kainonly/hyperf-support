@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Hyperf\Support\Middleware;
 
 use Exception;
-use Hyperf\Extra\Contract\TokenServiceInterface;
-use Hyperf\Extra\Contract\UtilsServiceInterface;
+use Hyperf\Extra\Contract\TokenInterface;
+use Hyperf\Extra\Contract\UtilsInterface;
 use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
 use Hyperf\Support\Redis\RefreshToken;
 use Hyperf\Utils\Context;
@@ -26,7 +26,7 @@ abstract class AuthVerify implements MiddlewareInterface
     protected string $scene = 'default';
     private ContainerInterface $container;
     private HttpResponse $response;
-    private TokenServiceInterface $token;
+    private TokenInterface $token;
     private $utils;
 
     /**
@@ -38,8 +38,8 @@ abstract class AuthVerify implements MiddlewareInterface
     {
         $this->container = $container;
         $this->response = $response;
-        $this->token = $container->get(TokenServiceInterface::class);
-        $this->utils = $container->get(UtilsServiceInterface::class);
+        $this->token = $container->get(TokenInterface::class);
+        $this->utils = $container->get(UtilsInterface::class);
     }
 
     /**

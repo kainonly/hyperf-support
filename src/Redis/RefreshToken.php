@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace Hyperf\Support\Redis;
 
 use Exception;
-use Hyperf\Extra\Contract\HashServiceInterface;
+use Hyperf\Extra\Contract\HashInterface;
 use Hyperf\Support\Common\RedisModel;
 use Psr\Container\ContainerInterface;
 
 class RefreshToken extends RedisModel
 {
     protected string $key = 'refresh-token:';
-    private HashServiceInterface $hash;
+    private HashInterface $hash;
 
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
-        $this->hash = $container->get(HashServiceInterface::class);
+        $this->hash = $container->get(HashInterface::class);
     }
 
     /**
