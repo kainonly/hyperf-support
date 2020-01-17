@@ -50,11 +50,17 @@ trait Auth
         $ack = Str::random();
         $result = RefreshToken::create($this->container)->factory($jti, $ack, $this->refreshTokenExpires());
         if (!$result) {
-            throw new InvalidResponseException('refresh token set failed');
+            return $this->response->json([
+                'error' => 1,
+                'msg' => 'refresh token set failed'
+            ]);
         }
         $tokenString = (string)$this->token->create($scene, $jti, $ack, $symbol);
         if (!$tokenString) {
-            throw new InvalidResponseException('create token failed');
+            return $this->response->json([
+                'error' => 1,
+                'msg' => 'create token failed'
+            ]);
         }
         $cookie = $this->utils->cookie($scene . '_token', $tokenString);
         return $this->response->withCookie($cookie)->json([

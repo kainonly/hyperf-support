@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Common;
 
+use Hyperf\Redis\Redis;
 use Psr\Container\ContainerInterface;
-use Redis;
 
 /**
  * Class RedisModel
@@ -14,6 +14,9 @@ abstract class RedisModel
 {
     protected string $key;
     protected ContainerInterface $container;
+    /**
+     * @var Redis|\Redis
+     */
     protected Redis $redis;
 
     /**
@@ -35,6 +38,6 @@ abstract class RedisModel
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->redis = $container->get(Redis::class);
+        $this->redis = $container->get(\Redis::class);
     }
 }
