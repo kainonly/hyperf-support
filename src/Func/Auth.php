@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Hyperf\Support\Traits;
+namespace Hyperf\Support\Func;
 
 use Redis;
 use Exception;

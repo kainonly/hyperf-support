@@ -4,14 +4,12 @@ declare(strict_types=1);
 namespace Hyperf\Support\Middleware;
 
 use Exception;
+use Lcobucci\JWT\Token;
+use Hyperf\Utils\Context;
 use Hyperf\Extra\Token\TokenInterface;
 use Hyperf\Extra\Utils\UtilsInterface;
-use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
 use Hyperf\Support\RedisModel\RefreshToken;
-use Hyperf\Utils\Context;
-use Lcobucci\JWT\Token;
 use Psr\Container\ContainerInterface;
-use Hyperf\HttpServer\Contract\ResponseInterface as HttpResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,19 +23,16 @@ abstract class AuthVerify implements MiddlewareInterface
 {
     protected string $scene = 'default';
     private ContainerInterface $container;
-    private HttpResponse $response;
     private TokenInterface $token;
     private $utils;
 
     /**
      * AuthVerify constructor.
      * @param ContainerInterface $container
-     * @param HttpResponse $response
      */
-    public function __construct(ContainerInterface $container, HttpResponse $response)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->response = $response;
         $this->token = $container->get(TokenInterface::class);
         $this->utils = $container->get(UtilsInterface::class);
     }
@@ -50,54 +45,39 @@ abstract class AuthVerify implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        try {
-            $cookies = $request->getCookieParams();
-            if (empty($cookies[$this->scene . '_token'])) {
-                return $this->response->json([
-                    'error' => 1,
-                    'msg' => 'please first authorize user login'
-                ]);
-            }
-            $tokenString = $cookies[$this->scene . '_token'];
-            $result = $this->token->verify($this->scene, $tokenString);
-            if ($result->expired) {
-                $response = Context::get(ResponseInterface::class);
-                /**
-                 * @var $token Token
-                 */
-                $token = $result->token;
-                $jti = $token->getClaim('jti');
-                $ack = $token->getClaim('ack');
-                $verify = RefreshToken::create($this->container)->verify($jti, $ack);
-                if (!$verify) {
-                    return $this->response->json([
-                        'error' => 1,
-                        'msg' => 'refresh token verification expired'
-                    ]);
-                }
-                $symbol = (array)$token->getClaim('symbol');
-                $preTokenString = (string)$this->token->create(
-                    $this->scene,
-                    $jti,
-                    $ack,
-                    $symbol
-                );
-                if (!$preTokenString) {
-                    return $this->response->json([
-                        'error' => 1,
-                        'msg' => 'create token failed'
-                    ]);
-                }
-                $cookie = $this->utils->cookie($this->scene . '_token', $preTokenString);
-                $response = $response->withCookie($cookie);
-                Context::set(ResponseInterface::class, $response);
-            }
-            return $handler->handle($request);
-        } catch (InvalidResponseException $exception) {
-            return $this->response->json([
-                'error' => 1,
-                'msg' => $exception->getMessage()
-            ]);
+        $cookies = $request->getCookieParams();
+        if (empty($cookies[$this->scene . '_token'])) {
+            throw new Exception('please first authorize user login');
         }
+        $tokenString = $cookies[$this->scene . '_token'];
+        $result = $this->token->verify($this->scene, $tokenString);
+        if ($result->expired) {
+            /**
+             * @var $response ResponseInterface
+             * @var $token Token
+             */
+            $response = Context::get(ResponseInterface::class);
+            $token = $result->token;
+            $jti = $token->getClaim('jti');
+            $ack = $token->getClaim('ack');
+            $verify = RefreshToken::create($this->container)->verify($jti, $ack);
+            if (!$verify) {
+                throw new Exception('refresh token verification expired');
+            }
+            $symbol = (array)$token->getClaim('symbol');
+            $preTokenString = (string)$this->token->create(
+                $this->scene,
+                $jti,
+                $ack,
+                $symbol
+            );
+            if (!$preTokenString) {
+                throw new Exception('create token failed');
+            }
+            $cookie = $this->utils->cookie($this->scene . '_token', $preTokenString);
+            $response = $response->withCookie($cookie);
+            Context::set(ResponseInterface::class, $response);
+        }
+        return $handler->handle($request);
     }
 }
