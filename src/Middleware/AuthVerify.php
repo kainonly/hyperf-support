@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace Hyperf\Support\Middleware;
 
 use Exception;
-use Hyperf\Extra\Contract\TokenInterface;
-use Hyperf\Extra\Contract\UtilsInterface;
+use Hyperf\Extra\Token\TokenInterface;
+use Hyperf\Extra\Utils\UtilsInterface;
 use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
-use Hyperf\Support\Redis\RefreshToken;
+use Hyperf\Support\RedisModel\RefreshToken;
 use Hyperf\Utils\Context;
 use Lcobucci\JWT\Token;
 use Psr\Container\ContainerInterface;

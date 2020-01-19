@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Hyperf\Support\Redis;
+namespace Hyperf\Support\RedisModel;
 
 use Exception;
-use Hyperf\Support\Common\RedisModel;
+use Hyperf\Extra\Common\RedisModel;
 
 class Sms extends RedisModel
 {
