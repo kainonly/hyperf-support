@@ -31,7 +31,7 @@ class RefreshToken extends RedisModel
         return $this->redis->setex(
             $this->key . $jti,
             $expires,
-            $this->hash->make($ack)
+            $this->hash->create($ack)
         );
     }
 
