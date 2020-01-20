@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\RedisModel;
 
-use Exception;
 use Hyperf\Extra\Hash\HashInterface;
 use Hyperf\Extra\Common\RedisModel;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
 
 class RefreshToken extends RedisModel
 {
@@ -40,12 +40,11 @@ class RefreshToken extends RedisModel
      * @param string $jti Token ID
      * @param string $ack Ack Code
      * @return bool
-     * @throws Exception
      */
     public function verify(string $jti, string $ack): bool
     {
         if (!$this->redis->exists($this->key . $jti)) {
-            throw new Exception("The [$this->key . $jti] cache not exists.");
+            return false;
         }
         return $this->hash->check(
             $ack,
@@ -58,15 +57,14 @@ class RefreshToken extends RedisModel
      * @param string $jti Token ID
      * @param string $ack Ack Code
      * @return int
-     * @throws Exception
      */
     public function clear(string $jti, string $ack): int
     {
         if (!$this->redis->exists($this->key . $jti)) {
-            throw new Exception("The [$this->key . $jti] cache not exists.");
+            return 1;
         }
         if (!$this->hash->check($ack, $this->redis->get($this->key . $jti))) {
-            throw new Exception("Token confirmation codes are inconsistent.");
+            throw new RuntimeException('Token confirmation codes are inconsistent.');
         }
         return $this->redis->del([$this->key . $jti]);
     }

@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 /**
  * Class AuthVerify
@@ -47,7 +48,7 @@ abstract class AuthVerify implements MiddlewareInterface
     {
         $cookies = $request->getCookieParams();
         if (empty($cookies[$this->scene . '_token'])) {
-            throw new Exception('please first authorize user login');
+            throw new RuntimeException('please first authorize user login');
         }
         $tokenString = $cookies[$this->scene . '_token'];
         $result = $this->token->verify($this->scene, $tokenString);
@@ -62,7 +63,7 @@ abstract class AuthVerify implements MiddlewareInterface
             $ack = $token->getClaim('ack');
             $verify = RefreshToken::create($this->container)->verify($jti, $ack);
             if (!$verify) {
-                throw new Exception('refresh token verification expired');
+                throw new RuntimeException('refresh token verification expired');
             }
             $symbol = (array)$token->getClaim('symbol');
             $preTokenString = (string)$this->token->create(
@@ -72,7 +73,7 @@ abstract class AuthVerify implements MiddlewareInterface
                 $symbol
             );
             if (!$preTokenString) {
-                throw new Exception('create token failed');
+                throw new RuntimeException('create token failed');
             }
             $cookie = $this->utils->cookie($this->scene . '_token', $preTokenString);
             $response = $response->withCookie($cookie);
