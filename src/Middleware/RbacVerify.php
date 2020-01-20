@@ -44,7 +44,6 @@ abstract class RbacVerify implements MiddlewareInterface
         $roleKey = Context::get('auth')->role;
         $roleLists = RoleRedis::create($this->container)->get($roleKey, 'acl');
         rsort($roleLists);
-        var_dump($roleLists);
         $policy = null;
         foreach ($roleLists as $k => $value) {
             [$roleController, $roleAction] = explode(':', $value);

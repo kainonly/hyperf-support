@@ -15,6 +15,7 @@ use Hyperf\HttpServer\Contract\RequestInterface;
 use Hyperf\HttpServer\Contract\ResponseInterface;
 use Hyperf\HttpServer\Exception\Http\InvalidResponseException;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use stdClass;
 
 /**
  * Trait Auth
@@ -40,11 +41,11 @@ trait Auth
     /**
      * Create Cookie Auth
      * @param string $scene
-     * @param array $symbol
+     * @param stdClass|null $symbol
      * @return PsrResponseInterface
      * @throws Exception
      */
-    protected function create(string $scene, array $symbol = []): PsrResponseInterface
+    protected function create(string $scene, ?stdClass $symbol): PsrResponseInterface
     {
         $jti = $this->utils->uuid()->toString();
         $ack = Str::random();
@@ -95,7 +96,7 @@ trait Auth
                 if (!$verify) {
                     throw new InvalidResponseException('refresh token verification expired');
                 }
-                $symbol = (array)$token->getClaim('symbol');
+                $symbol = $token->getClaim('symbol');
                 $preTokenString = (string)$this->token->create(
                     $scene,
                     $jti,
