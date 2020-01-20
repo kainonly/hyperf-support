@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Middleware;
 
-use Exception;
+use RuntimeException;
 use Lcobucci\JWT\Token;
 use Hyperf\Utils\Context;
 use Hyperf\Extra\Token\TokenInterface;
@@ -14,7 +14,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 
 /**
  * Class AuthVerify
@@ -42,7 +41,6 @@ abstract class AuthVerify implements MiddlewareInterface
      * @param ServerRequestInterface $request
      * @param RequestHandlerInterface $handler
      * @return ResponseInterface
-     * @throws Exception
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -50,22 +48,22 @@ abstract class AuthVerify implements MiddlewareInterface
         if (empty($cookies[$this->scene . '_token'])) {
             throw new RuntimeException('please first authorize user login');
         }
+        /**
+         * @var $response ResponseInterface
+         * @var $token Token
+         */
+        $response = Context::get(ResponseInterface::class);
         $tokenString = $cookies[$this->scene . '_token'];
         $result = $this->token->verify($this->scene, $tokenString);
+        $token = $result->token;
+        $symbol = $token->getClaim('symbol');
         if ($result->expired) {
-            /**
-             * @var $response ResponseInterface
-             * @var $token Token
-             */
-            $response = Context::get(ResponseInterface::class);
-            $token = $result->token;
             $jti = $token->getClaim('jti');
             $ack = $token->getClaim('ack');
             $verify = RefreshToken::create($this->container)->verify($jti, $ack);
             if (!$verify) {
                 throw new RuntimeException('refresh token verification expired');
             }
-            $symbol = (array)$token->getClaim('symbol');
             $preTokenString = (string)$this->token->create(
                 $this->scene,
                 $jti,
@@ -77,8 +75,9 @@ abstract class AuthVerify implements MiddlewareInterface
             }
             $cookie = $this->utils->cookie($this->scene . '_token', $preTokenString);
             $response = $response->withCookie($cookie);
-            Context::set(ResponseInterface::class, $response);
         }
+        Context::set('auth', $symbol);
+        Context::set(ResponseInterface::class, $response);
         return $handler->handle($request);
     }
 }
