@@ -19,7 +19,7 @@ class Sms extends RedisModel
      */
     public function factory($phone, $code, $timeout = 120): bool
     {
-        $data = msgpack_pack([
+        $data = json_encode([
             'code' => $code,
             'publish_time' => time(),
             'timeout' => $timeout
@@ -40,7 +40,7 @@ class Sms extends RedisModel
         if (!$this->redis->exists($this->key . $phone)) {
             throw new Exception("The [$this->key . $phone] cache not exists.");
         }
-        $data = msgpack_unpack($this->redis->get($this->key . $phone));
+        $data = json_decode($this->redis->get($this->key . $phone), true);
         $result = ($code === $data['code']);
         if ($once && $result) {
             $this->redis->del([
@@ -61,7 +61,7 @@ class Sms extends RedisModel
         if (!$this->redis->exists($this->key . $phone)) {
             throw new Exception("The [$this->key . $phone] cache not exists.");
         }
-        $data = msgpack_unpack($this->redis->get($this->key . $phone));
+        $data = json_decode($this->redis->get($this->key . $phone), true);
         return [
             'publish_time' => $data['publish_time'],
             'timeout' => $data['timeout']
