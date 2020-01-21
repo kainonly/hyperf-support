@@ -47,7 +47,7 @@ trait Auth
      */
     protected function create(string $scene, ?stdClass $symbol): PsrResponseInterface
     {
-        $jti = $this->utils->uuid()->toString();
+        $jti = uuid()->toString();
         $ack = Str::random();
         $result = RefreshToken::create($this->container)->factory($jti, $ack, $this->refreshTokenExpires());
         if (!$result) {
