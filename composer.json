@@ -1,11 +1,15 @@
 {
   "name": "kain/hyperf-support",
-  "description": "Feature support library like Laravel for Hyperf framework",
+  "description": "辅助 Hyperf 的特性功能支持库",
   "require": {
     "php": ">=7.4",
-    "ext-msgpack": "*",
-    "ext-swoole": ">=4.4",
-    "hyperf/framework": "~1.1.0"
+    "ext-redis": "*",
+    "ext-json": "*",
+    "hyperf/framework": "~1.1.0",
+    "kain/hyperf-extra": "^1.0.0"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-master"
   },
   "autoload": {
     "psr-4": {
