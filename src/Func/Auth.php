@@ -25,6 +25,7 @@ use stdClass;
  * @property ContainerInterface $container
  * @property TokenInterface $token
  * @property UtilsInterface $utils
+ * @property RefreshToken $refreshToken
  * @property Redis $redis
  */
 trait Auth
@@ -49,7 +50,7 @@ trait Auth
     {
         $jti = uuid()->toString();
         $ack = Str::random();
-        $result = RefreshToken::create($this->container)->factory($jti, $ack, $this->refreshTokenExpires());
+        $result = $this->refreshToken->factory($jti, $ack, $this->refreshTokenExpires());
         if (!$result) {
             return $this->response->json([
                 'error' => 1,
@@ -92,7 +93,7 @@ trait Auth
                 $token = $result->token;
                 $jti = $token->getClaim('jti');
                 $ack = $token->getClaim('ack');
-                $verify = RefreshToken::create($this->container)->verify($jti, $ack);
+                $verify = $this->refreshToken->verify($jti, $ack);
                 if (!$verify) {
                     throw new InvalidResponseException('refresh token verification expired');
                 }
@@ -136,7 +137,7 @@ trait Auth
         $tokenString = $this->request->cookie($scene . '_token');
         if (!empty($tokenString)) {
             $token = $this->token->get($tokenString);
-            RefreshToken::create($this->container)->clear(
+            $this->refreshToken->clear(
                 $token->getClaim('jti'),
                 $token->getClaim('ack')
             );

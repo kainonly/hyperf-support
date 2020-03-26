@@ -9,7 +9,6 @@ use Hyperf\Utils\Context;
 use Hyperf\Extra\Token\TokenInterface;
 use Hyperf\Extra\Utils\UtilsInterface;
 use Hyperf\Support\RedisModel\RefreshToken;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -22,19 +21,21 @@ use Psr\Http\Server\RequestHandlerInterface;
 abstract class AuthVerify implements MiddlewareInterface
 {
     protected string $scene = 'default';
-    private ContainerInterface $container;
     private TokenInterface $token;
-    private $utils;
+    private UtilsInterface $utils;
+    private RefreshToken $refreshToken;
 
     /**
      * AuthVerify constructor.
-     * @param ContainerInterface $container
+     * @param TokenInterface $token
+     * @param UtilsInterface $utils
+     * @param RefreshToken $refreshToken
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(TokenInterface $token, UtilsInterface $utils, RefreshToken $refreshToken)
     {
-        $this->container = $container;
-        $this->token = $container->get(TokenInterface::class);
-        $this->utils = $container->get(UtilsInterface::class);
+        $this->token = $token;
+        $this->utils = $utils;
+        $this->refreshToken = $refreshToken;
     }
 
     /**
@@ -60,7 +61,7 @@ abstract class AuthVerify implements MiddlewareInterface
         if ($result->expired) {
             $jti = $token->getClaim('jti');
             $ack = $token->getClaim('ack');
-            $verify = RefreshToken::create($this->container)->verify($jti, $ack);
+            $verify = $this->refreshToken->verify($jti, $ack);
             if (!$verify) {
                 throw new RuntimeException('refresh token verification expired');
             }

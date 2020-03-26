@@ -6,7 +6,6 @@ namespace Hyperf\Support\Middleware;
 use App\RedisModel\System\AclRedis;
 use RuntimeException;
 use App\RedisModel\System\RoleRedis;
-use Hyperf\Contract\ContainerInterface;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
 use Psr\Http\Message\ResponseInterface;
@@ -16,14 +15,15 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class RbacVerify implements MiddlewareInterface
 {
-    private ContainerInterface $container;
     protected string $prefix = '';
     protected array $ignore = [];
+    private RoleRedis $roleRedis;
+    private AclRedis $aclRedis;
 
-
-    public function __construct(ContainerInterface $container)
+    public function __construct(RoleRedis $roleRedis, AclRedis $aclRedis)
     {
-        $this->container = $container;
+        $this->roleRedis = $roleRedis;
+        $this->aclRedis = $aclRedis;
     }
 
     /**
@@ -42,7 +42,7 @@ abstract class RbacVerify implements MiddlewareInterface
         }
 
         $roleKey = Context::get('auth')->role;
-        $roleLists = RoleRedis::create($this->container)->get($roleKey, 'acl');
+        $roleLists = $this->roleRedis->get($roleKey, 'acl');
         rsort($roleLists);
         $policy = null;
         foreach ($roleLists as $k => $value) {
@@ -57,8 +57,7 @@ abstract class RbacVerify implements MiddlewareInterface
             throw new RuntimeException('rbac invalid, policy is empty');
         }
 
-        $aclLists = AclRedis::create($this->container)
-            ->get($controller, (int)$policy);
+        $aclLists = $this->aclRedis->get($controller, (int)$policy);
 
         if (empty($aclLists)) {
             throw new RuntimeException('rbac invalid, acl is empty');
