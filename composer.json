@@ -5,8 +5,8 @@
     "php": ">=7.4",
     "ext-redis": "*",
     "ext-json": "*",
-    "hyperf/framework": "~1.1.0",
-    "kain/hyperf-extra": "^1.0.0"
+    "hyperf/framework": "~2.0.0",
+    "kain/hyperf-extra": "~2.0.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master"
