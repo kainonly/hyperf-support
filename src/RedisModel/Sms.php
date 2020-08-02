@@ -23,7 +23,7 @@ class Sms extends RedisModel
             'code' => $code,
             'publish_time' => time(),
             'timeout' => $timeout
-        ], JSON_THROW_ON_ERROR, 512);
+        ]);
         return $this->redis->setex($this->key . $phone, $timeout, $data);
     }
 
@@ -39,12 +39,8 @@ class Sms extends RedisModel
         if (!$this->redis->exists($this->key . $phone)) {
             return false;
         }
-        $data = json_decode(
-            $this->redis->get($this->key . $phone),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
+        $raw = $this->redis->get($this->key . $phone);
+        $data = json_decode($raw, true);
         $result = ($code === $data['code']);
         if ($once && $result) {
             $this->redis->del([
@@ -64,12 +60,8 @@ class Sms extends RedisModel
         if (!$this->redis->exists($this->key . $phone)) {
             throw new RuntimeException("The [$this->key . $phone] cache not exists.");
         }
-        $data = json_decode(
-            $this->redis->get($this->key . $phone),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
+        $raw = $this->redis->get($this->key . $phone);
+        $data = json_decode($raw, true);
         return [
             'publish_time' => $data['publish_time'],
             'timeout' => $data['timeout']
