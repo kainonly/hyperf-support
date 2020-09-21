@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Middleware;
 
-use App\RedisModel\System\AclRedis;
+use Hyperf\Support\RedisModel\AclInterface;
+use Hyperf\Support\RedisModel\RoleInterface;
 use RuntimeException;
-use App\RedisModel\System\RoleRedis;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
 use Psr\Http\Message\ResponseInterface;
@@ -17,13 +17,13 @@ abstract class RbacVerify implements MiddlewareInterface
 {
     protected string $prefix = '';
     protected array $ignore = [];
-    private RoleRedis $roleRedis;
-    private AclRedis $aclRedis;
+    private RoleInterface $roleRedis;
+    private AclInterface $aclRedis;
 
-    public function __construct(RoleRedis $roleRedis, AclRedis $aclRedis)
+    public function __construct(RoleInterface $role, AclInterface $acl)
     {
-        $this->roleRedis = $roleRedis;
-        $this->aclRedis = $aclRedis;
+        $this->roleRedis = $role;
+        $this->aclRedis = $acl;
     }
 
     /**
