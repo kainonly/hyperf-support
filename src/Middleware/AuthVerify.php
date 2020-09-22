@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Middleware;
 
-use RuntimeException;
+use Hyperf\HttpServer\Response;
 use Lcobucci\JWT\Token;
 use Hyperf\Utils\Context;
 use Hyperf\Extra\Token\TokenInterface;
@@ -47,7 +47,10 @@ abstract class AuthVerify implements MiddlewareInterface
     {
         $cookies = $request->getCookieParams();
         if (empty($cookies[$this->scene . '_token'])) {
-            throw new RuntimeException('please first authorize user login');
+            return (new Response())->json([
+                'error' => 1,
+                'msg' => 'please first authorize user login'
+            ]);
         }
         /**
          * @var $response ResponseInterface
@@ -63,7 +66,10 @@ abstract class AuthVerify implements MiddlewareInterface
             $ack = $token->getClaim('ack');
             $verify = $this->refreshToken->verify($jti, $ack);
             if (!$verify) {
-                throw new RuntimeException('refresh token verification expired');
+                return (new Response())->json([
+                    'error' => 1,
+                    'msg' => 'refresh token verification expired'
+                ]);
             }
             $preTokenString = (string)$this->token->create(
                 $this->scene,
@@ -72,7 +78,10 @@ abstract class AuthVerify implements MiddlewareInterface
                 $symbol
             );
             if (!$preTokenString) {
-                throw new RuntimeException('create token failed');
+                return (new Response())->json([
+                    'error' => 1,
+                    'msg' => 'create token failed'
+                ]);
             }
             $cookie = $this->utils->cookie($this->scene . '_token', $preTokenString);
             $response = $response->withCookie($cookie);

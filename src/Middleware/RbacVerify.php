@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Hyperf\Support\Middleware;
 
+use Hyperf\HttpServer\Response;
 use Hyperf\Support\RedisModel\AclInterface;
 use Hyperf\Support\RedisModel\RoleInterface;
-use RuntimeException;
 use Hyperf\Utils\Context;
 use Hyperf\Utils\Str;
 use Psr\Http\Message\ResponseInterface;
@@ -54,17 +54,26 @@ abstract class RbacVerify implements MiddlewareInterface
         }
 
         if ($policy === null) {
-            throw new RuntimeException('rbac invalid, policy is empty');
+            return (new Response())->json([
+                'error' => 1,
+                'msg' => 'rbac invalid, policy is empty'
+            ]);
         }
 
         $aclLists = $this->aclRedis->get($controller, (int)$policy);
 
         if (empty($aclLists)) {
-            throw new RuntimeException('rbac invalid, acl is empty');
+            return (new Response())->json([
+                'error' => 1,
+                'msg' => 'rbac invalid, acl is empty'
+            ]);
         }
 
         if (!in_array($action, $aclLists, true)) {
-            throw new RuntimeException('rbac invalid, access denied');
+            return (new Response())->json([
+                'error' => 1,
+                'msg' => 'rbac invalid, access denied'
+            ]);
         }
 
         return $handler->handle($request);

@@ -17,7 +17,7 @@ class Sms extends RedisModel
      * @param int $timeout Timeout
      * @return bool
      */
-    public function factory($phone, $code, $timeout = 120): bool
+    public function factory(string $phone, string $code, int $timeout = 120): bool
     {
         $data = json_encode([
             'code' => $code,
@@ -34,7 +34,7 @@ class Sms extends RedisModel
      * @param boolean $once Only Once
      * @return bool
      */
-    public function check($phone, $code, $once = false): bool
+    public function check(string $phone, string $code, bool $once = false): bool
     {
         if (!$this->redis->exists($this->key . $phone)) {
             return false;
@@ -55,7 +55,7 @@ class Sms extends RedisModel
      * @param string $phone PhoneNumber
      * @return array
      */
-    public function time($phone): array
+    public function time(string $phone): array
     {
         if (!$this->redis->exists($this->key . $phone)) {
             throw new RuntimeException("The [$this->key . $phone] cache not exists.");
