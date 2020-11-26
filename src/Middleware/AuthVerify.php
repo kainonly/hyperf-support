@@ -59,11 +59,13 @@ abstract class AuthVerify implements MiddlewareInterface
         $response = Context::get(ResponseInterface::class);
         $tokenString = $cookies[$this->scene . '_token'];
         $result = $this->token->verify($this->scene, $tokenString);
+        assert($result->token instanceof Token\Plain);
         $token = $result->token;
-        $symbol = $token->getClaim('symbol');
+        $claims = $token->claims();
+        $symbol = $claims->get('symbol');
         if ($result->expired) {
-            $jti = $token->getClaim('jti');
-            $ack = $token->getClaim('ack');
+            $jti = $claims->get('jti');
+            $ack = $claims->get('ack');
             $verify = $this->refreshToken->verify($jti, $ack);
             if (!$verify) {
                 return (new Response())->json([

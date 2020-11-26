@@ -42,11 +42,11 @@ trait Auth
     /**
      * Create Cookie Auth
      * @param string $scene
-     * @param stdClass|null $symbol
+     * @param array $symbol
      * @return PsrResponseInterface
      * @throws Exception
      */
-    protected function create(string $scene, ?stdClass $symbol): PsrResponseInterface
+    protected function create(string $scene, array $symbol = []): PsrResponseInterface
     {
         $jti = uuid()->toString();
         $ack = Str::random();
@@ -57,14 +57,8 @@ trait Auth
                 'msg' => 'refresh token set failed'
             ]);
         }
-        $tokenString = (string)$this->token->create($scene, $jti, $ack, $symbol);
-        if (!$tokenString) {
-            return $this->response->json([
-                'error' => 1,
-                'msg' => 'create token failed'
-            ]);
-        }
-        $cookie = $this->utils->cookie($scene . '_token', $tokenString);
+        $token = $this->token->create($scene, $jti, $ack, $symbol);
+        $cookie = $this->utils->cookie($scene . '_token', $token->toString());
         return $this->response->withCookie($cookie)->json([
             'error' => 0,
             'msg' => 'ok'
@@ -80,34 +74,25 @@ trait Auth
     protected function authVerify($scene): PsrResponseInterface
     {
         try {
-            $tokenString = $this->request->cookie($scene . '_token');
-            if (empty($tokenString)) {
+            $jwt = $this->request->cookie($scene . '_token');
+            if (empty($jwt)) {
                 throw new InvalidResponseException('refresh token not exists');
             }
 
-            $result = $this->token->verify($scene, $tokenString);
+            $result = $this->token->verify($scene, $jwt);
             if ($result->expired) {
-                /**
-                 * @var $token Token
-                 */
+                assert($result->token instanceof Token\Plain);
                 $token = $result->token;
-                $jti = $token->getClaim('jti');
-                $ack = $token->getClaim('ack');
+                $claims = $token->claims();
+                $jti = $claims->get('jti');
+                $ack = $claims->get('ack');
                 $verify = $this->refreshToken->verify($jti, $ack);
                 if (!$verify) {
                     throw new InvalidResponseException('refresh token verification expired');
                 }
-                $symbol = $token->getClaim('symbol');
-                $preTokenString = (string)$this->token->create(
-                    $scene,
-                    $jti,
-                    $ack,
-                    $symbol
-                );
-                if (!$preTokenString) {
-                    throw new InvalidResponseException('create token failed');
-                }
-                $cookie = $this->utils->cookie($scene . '_token', $preTokenString);
+                $symbol = $claims->get('symbol');
+                $newToken = $this->token->create($scene, $jti, $ack, $symbol);
+                $cookie = $this->utils->cookie($scene . '_token', $newToken->toString());
                 return $this->response->withCookie($cookie)->json([
                     'error' => 0,
                     'msg' => 'ok'
@@ -134,12 +119,13 @@ trait Auth
      */
     protected function destory(string $scene): PsrResponseInterface
     {
-        $tokenString = $this->request->cookie($scene . '_token');
-        if (!empty($tokenString)) {
-            $token = $this->token->get($tokenString);
+        $jwt = $this->request->cookie($scene . '_token');
+        if (!empty($jwt)) {
+            $token = $this->token->get($jwt);
+            $claims = $token->claims();
             $this->refreshToken->clear(
-                $token->getClaim('jti'),
-                $token->getClaim('ack')
+                $claims->get('jti'),
+                $claims->get('ack')
             );
         }
         $cookie = $this->utils->cookie($scene . '_token', '');
