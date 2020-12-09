@@ -29,7 +29,7 @@ class RefreshToken extends RedisModel
     public function factory(string $jti, string $ack, int $expires): bool
     {
         return $this->redis->setex(
-            $this->key . $jti,
+            $this->getKey($jti),
             $expires,
             $this->hash->create($ack)
         );
@@ -43,12 +43,12 @@ class RefreshToken extends RedisModel
      */
     public function verify(string $jti, string $ack): bool
     {
-        if (!$this->redis->exists($this->key . $jti)) {
+        if (!$this->redis->exists($this->getKey($jti))) {
             return false;
         }
         return $this->hash->check(
             $ack,
-            $this->redis->get($this->key . $jti)
+            $this->redis->get($this->getKey($jti))
         );
     }
 
@@ -60,12 +60,12 @@ class RefreshToken extends RedisModel
      */
     public function clear(string $jti, string $ack): int
     {
-        if (!$this->redis->exists($this->key . $jti)) {
+        if (!$this->redis->exists($this->getKey($jti))) {
             return 1;
         }
-        if (!$this->hash->check($ack, $this->redis->get($this->key . $jti))) {
+        if (!$this->hash->check($ack, $this->redis->get($this->getKey($jti)))) {
             throw new RuntimeException('Token confirmation codes are inconsistent.');
         }
-        return $this->redis->del([$this->key . $jti]);
+        return $this->redis->del([$this->getKey($jti)]);
     }
 }

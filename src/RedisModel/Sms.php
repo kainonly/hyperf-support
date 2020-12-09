@@ -24,7 +24,7 @@ class Sms extends RedisModel
             'publish_time' => time(),
             'timeout' => $timeout
         ]);
-        return $this->redis->setex($this->key . $phone, $timeout, $data);
+        return $this->redis->setex($this->getKey($phone), $timeout, $data);
     }
 
     /**
@@ -36,16 +36,14 @@ class Sms extends RedisModel
      */
     public function check(string $phone, string $code, bool $once = false): bool
     {
-        if (!$this->redis->exists($this->key . $phone)) {
+        if (!$this->redis->exists($this->getKey($phone))) {
             return false;
         }
-        $raw = $this->redis->get($this->key . $phone);
+        $raw = $this->redis->get($this->getKey($phone));
         $data = json_decode($raw, true);
         $result = ($code === $data['code']);
         if ($once && $result) {
-            $this->redis->del([
-                $this->key . $phone
-            ]);
+            $this->redis->del([$this->getKey($phone)]);
         }
         return $result;
     }
@@ -57,10 +55,10 @@ class Sms extends RedisModel
      */
     public function time(string $phone): array
     {
-        if (!$this->redis->exists($this->key . $phone)) {
-            throw new RuntimeException("The [$this->key . $phone] cache not exists.");
+        if (!$this->redis->exists($this->getKey($phone))) {
+            throw new RuntimeException("The [{$this->getKey($phone)}] cache not exists.");
         }
-        $raw = $this->redis->get($this->key . $phone);
+        $raw = $this->redis->get($this->getKey($phone));
         $data = json_decode($raw, true);
         return [
             'publish_time' => $data['publish_time'],
