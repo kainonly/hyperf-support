@@ -73,19 +73,8 @@ abstract class AuthVerify implements MiddlewareInterface
                     'msg' => 'refresh token verification expired'
                 ]);
             }
-            $preTokenString = (string)$this->token->create(
-                $this->scene,
-                $jti,
-                $ack,
-                $symbol
-            );
-            if (!$preTokenString) {
-                return (new Response())->json([
-                    'error' => 1,
-                    'msg' => 'create token failed'
-                ]);
-            }
-            $cookie = $this->utils->cookie($this->scene . '_token', $preTokenString);
+            $newToken = $this->token->create($this->scene, $jti, $ack, $symbol);
+            $cookie = $this->utils->cookie($this->scene . '_token', $newToken->toString());
             $response = $response->withCookie($cookie);
         }
         Context::set('auth', $symbol);
